@@ -5,7 +5,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
+  ExtCtrls, PopupNotifier;
 
 type
 
@@ -15,13 +16,14 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    Edit1: TEdit;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     Label1: TLabel;
+    LabeledEdit1: TLabeledEdit;
+    LabeledEdit2: TLabeledEdit;
     Memo1: TMemo;
-    Memo2: TMemo;
     OpenDialog1: TOpenDialog;
+    PopupNotifier1: TPopupNotifier;
     SaveDialog1: TSaveDialog;
     StatusBar1: TStatusBar;
     procedure Button1Click(Sender: TObject);
@@ -37,9 +39,9 @@ type
 var
   Form1: TForm1;
   f: TextFile;
-  str,word,xword: string;
-  i,j,n,k,count,x: integer;
-  letter,buf: char;
+  str, savedtext: string;
+  i,j,n,k,count,buf: integer;
+  letter: char;
 implementation
 
 {$R *.lfm}
@@ -53,7 +55,6 @@ begin
   if (Memo1.GetTextLen() > 0) then begin
     Button1.Enabled := true;    
     Button3.Enabled := true;
-    //StatusBar1.Panels[0].Text := 'Okay';
   end else begin
     Button1.Enabled := false;
     Button3.Enabled := false;
@@ -63,10 +64,11 @@ end;
 procedure TForm1.Button1Click(Sender: TObject);
 begin
   if (saveDialog1.Execute) then begin
-    assignFile(f,saveDialog1.fileName);
-    StatusBar1.Panels[0].Text := saveDialog1.fileName;
-    reWrite(f);
-    Memo1.Lines.SaveToFile(saveDialog1.fileName);
+    assignFile(f,saveDialog1.FileName);
+    StatusBar1.Panels[0].Text := saveDialog1.FileName;
+    rewrite(f);
+    str := Memo1.Text;
+    write(f, str);
     closeFile(f);
   end;
 end;
@@ -84,51 +86,31 @@ end;
 
 procedure TForm1.Button3Click(Sender: TObject);
 begin
-  str := Memo1.Text+' ';
-  str := StringReplace(str, #10, ' ', [rfReplaceAll]);
-  i:=1;
+  if (labeledEdit1.text = '') then begin
+    PopupNotifier1.ShowAtPos(left+GroupBox2.Left, top+button3.Top+50);
+  end
+  else begin
+    str := StringReplace(Memo1.Text, #10, ' ', [rfReplaceAll]);
 
-  //while i <= Length(str) do begin
-  //    if (str[i]=' ') then begin
-  //      if(str[i+1]=' ') then delete(str, i+1,1);
-  //      i:=0;
-  //    end;
-  //    i:=i+1;
-  //end;
-  //       
-  //Edit1.Text := str;
+    letter := LabeledEdit1.text[1];
+    buf:=0;
+    count:=0;
 
-  n:=0;
-  k:=0;
-  Memo1.Clear;
-
-  for i:=1 to Length(str) do begin
-      if (str[i]=' ') then begin
-        k:=i;
-        word := Copy(str, n+1, k-n-1);
-        Memo1.Lines.Add(word); //debug
-        buf:=word[1]; count:=1; x:=0; j:=1;
-
-        while j < length(word)-1 do begin
-            if (letter=word[j+1]) then begin
-              letter:=word[j+1];
-              count:=count+1;
-            end else begin
-              letter:=word[j+1];
-              x:=count;
-              count:=1;
-            end;
-            if (count > x) then begin
-              xword:=word;
-            end;
-            j:=j+1;
+    i:=1;
+    while i<=length(str) do begin
+      if (str[i]=letter) then begin
+        while (str[i]=letter) do begin
+          count:=count+1;
+          i:=i+1;
         end;
-
-        n:=i;
+        if (buf < count) then buf:=count;
+        count:=0;
       end;
-  end;  
-  Edit1.Text := intToStr(x);
-  Memo2.Lines.Add(xword);
+      i:=i+1;
+    end;
+
+    LabeledEdit2.Text := intToStr(buf);
+  end;
 end;
 
 end.
