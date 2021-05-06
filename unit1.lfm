@@ -28,6 +28,18 @@ object Form1: TForm1
       ParentFont = False
       WordWrap = True
     end
+    object LabeledEdit1: TLabeledEdit
+      Left = 10
+      Height = 28
+      Top = 183
+      Width = 214
+      EditLabel.Height = 20
+      EditLabel.Width = 214
+      EditLabel.Caption = 'Искомый символ'
+      EditLabel.ParentColor = False
+      MaxLength = 1
+      TabOrder = 0
+    end
   end
   object GroupBox2: TGroupBox
     Left = 510
@@ -50,28 +62,16 @@ object Form1: TForm1
       ParentFont = False
       TabOrder = 0
     end
-    object LabeledEdit1: TLabeledEdit
-      Left = 64
-      Height = 28
-      Top = 96
-      Width = 100
-      EditLabel.Height = 20
-      EditLabel.Width = 100
-      EditLabel.Caption = 'X'
-      EditLabel.ParentColor = False
-      ReadOnly = True
-      TabOrder = 1
-    end
     object LabeledEdit2: TLabeledEdit
-      Left = 64
+      Left = 16
       Height = 28
       Top = 160
-      Width = 100
+      Width = 200
       EditLabel.Height = 20
-      EditLabel.Width = 100
-      EditLabel.Caption = 'Символ'
+      EditLabel.Width = 200
+      EditLabel.Caption = 'Количество повторений'
       EditLabel.ParentColor = False
-      TabOrder = 2
+      TabOrder = 1
     end
   end
   object Button1: TButton
@@ -113,7 +113,7 @@ object Form1: TForm1
   end
   object Memo1: TMemo
     Left = 260
-    Height = 160
+    Height = 156
     Top = 100
     Width = 230
     OnChange = Memo1Change
@@ -122,11 +122,22 @@ object Form1: TForm1
   end
   object OpenDialog1: TOpenDialog
     Options = [ofViewDetail]
-    Left = 20
-    Top = 210
+    Left = 272
+    Top = 56
   end
   object SaveDialog1: TSaveDialog
-    Left = 105
-    Top = 228
+    Left = 440
+    Top = 24
+  end
+  object PopupNotifier1: TPopupNotifier
+    Color = clRed
+    Icon.Data = {
+      07544269746D617000000000
+    }
+    Text = 'Введите символ.'
+    Title = 'Внимание!'
+    Visible = False
+    Left = 688
+    Top = 80
   end
 end

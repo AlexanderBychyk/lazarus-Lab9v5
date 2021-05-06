@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
-  ExtCtrls;
+  ExtCtrls, PopupNotifier;
 
 type
 
@@ -23,6 +23,7 @@ type
     LabeledEdit2: TLabeledEdit;
     Memo1: TMemo;
     OpenDialog1: TOpenDialog;
+    PopupNotifier1: TPopupNotifier;
     SaveDialog1: TSaveDialog;
     StatusBar1: TStatusBar;
     procedure Button1Click(Sender: TObject);
@@ -39,8 +40,8 @@ var
   Form1: TForm1;
   f: TextFile;
   str, savedtext: string;
-  i,j,n,k,count,x: integer;
-  letter,buf: char;
+  i,j,n,k,count,buf: integer;
+  letter: char;
 implementation
 
 {$R *.lfm}
@@ -66,7 +67,6 @@ begin
     assignFile(f,saveDialog1.FileName);
     StatusBar1.Panels[0].Text := saveDialog1.FileName;
     rewrite(f);
-    //Memo1.Lines.SaveToFile(saveDialog1.FileName);
     str := Memo1.Text;
     write(f, str);
     closeFile(f);
@@ -86,36 +86,54 @@ end;
 
 procedure TForm1.Button3Click(Sender: TObject);
 begin
-  str := StringReplace(Memo1.Text, #10, ' ', [rfReplaceAll]);
+  if (labeledEdit1.text = '') then begin
+    PopupNotifier1.ShowAtPos(left+GroupBox2.Left, top+button3.Top+50);
+  end
+  else begin
+    str := StringReplace(Memo1.Text, #10, ' ', [rfReplaceAll]);
 
-  letter := LabeledEdit2.text[1];
-  x:=1;
-  count:=0;
+    letter := LabeledEdit1.text[1];
+    buf:=0;
+    count:=0;
 
-  //for i:=1 to length(str) do begin
-  //  if (letter=str[i]) then begin
-  //    x:=x+1;
-  //  end else begin
-  //    if (count < x) then begin
-  //      count := x;
-  //    end;
-  //    x := 1;
-  //  end;
-  //end;
-
-  for i:=Pos(str, letter) to length(str) do begin
-    if (letter=str[i]) then begin
-      x:=x+1;
-    end else begin
-      if (count < x) then begin
-        count := x;
+    i:=1;
+    while i<=length(str) do begin
+      if (str[i]=letter) then begin
+        while (str[i]=letter) do begin
+          count:=count+1;
+          i:=i+1;
+        end;
+        if (buf < count) then buf:=count;
+        count:=0;
       end;
-      x := 1;
+      i:=i+1;
     end;
+
+    //for i:=1 to length(str) do begin
+    //  if (letter=str[i]) then begin
+    //    x:=x+1;
+    //  end else begin
+    //    if (count < x) then begin
+    //      count := x;
+    //    end;
+    //    x := 1;
+    //  end;
+    //end;
+
+    //for i:=Pos(str, letter) to length(str) do begin
+    //  if (letter=str[i]) then begin
+    //    x:=x+1;
+    //  end else begin
+    //    if (count < x) then begin
+    //      count := x;
+    //    end;
+    //    x := 1;
+    //  end;
+    //end;
+    //end;
+
+    LabeledEdit2.Text := intToStr(buf);
   end;
-
-  LabeledEdit1.Text := intToStr(count);
-
 end;
 
 end.
